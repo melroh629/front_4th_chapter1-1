@@ -1,27 +1,52 @@
-import { MainPage, ProfilePage, LoginPage } from "../pages";
+import { MainPage, ProfilePage, LoginPage, ErrorPage } from "../pages";
 
 export class Router {
   constructor() {
     this.routes = {};
     window.addEventListener("popstate", () => this.handlePopState());
   }
+
   addRoute(path, handler) {
     this.routes[path] = handler;
   }
+
   navigateTo(path) {
-    history.pushState(null, "", path);
-    this.handleRoute(path);
+    if (this.beforeNavigate(path)) {
+      history.pushState(null, "", path);
+      this.handleRoute(path);
+    }
   }
+
   handlePopState() {
     this.handleRoute(window.location.pathname);
   }
+
   handleRoute(path) {
     const handler = this.routes[path];
-    if (handler) {
-      document.body.innerHTML = handler();
+    const appRoot = document.getElementById("root");
+
+    if (handler && appRoot) {
+      appRoot.innerHTML = handler();
+
+      // 경로별로 이벤트 등록 처리
+      if (path === "/profile") {
+        import("../pages/ProfilePage.js").then((module) => {
+          module.attachProfileFormListeners();
+        });
+      }
     } else {
-      document.body.innerHTML = "error페이지로 교체";
+      appRoot.innerHTML = ErrorPage();
     }
+  }
+
+  beforeNavigate(path) {
+    const userId = localStorage.getItem("userId");
+    if (path === "/profile" && !userId) {
+      alert("로그인이 필요합니다.");
+      this.navigateTo("/login");
+      return false;
+    }
+    return true;
   }
 }
 

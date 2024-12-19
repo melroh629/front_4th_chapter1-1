@@ -1,43 +1,28 @@
 import { router } from "../router";
 
 class Profile {
-  // 사용자 이름, 이메일, 자기소개
   constructor(userName, email, bio) {
     this.userName = userName;
     this.email = email;
     this.bio = bio;
   }
-  // 로컬 스토리지에 저장된 프로필 데이터를 가져오는 메서드
+
   getProfile() {
     return {
-      userName: localStorage.getItem("userName"),
-      email: localStorage.getItem("email"),
-      bio: localStorage.getItem("bio"),
+      userName: localStorage.getItem("userName") || "",
+      email: localStorage.getItem("email") || "",
+      bio: localStorage.getItem("bio") || "",
     };
   }
-  // 프로필 데이터를 업데이트하는 메서드
+
   updateProfile(userName, email, bio) {
-    localStorage.setItem("userName", JSON.stringify({ userName }));
-    localStorage.setItem("email", JSON.stringify({ email }));
-    localStorage.setItem("bio", JSON.stringify({ bio }));
+    localStorage.setItem("userName", userName);
+    localStorage.setItem("email", email);
+    localStorage.setItem("bio", bio);
   }
 }
 
-const profile = new Profile();
-
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("profileForm");
-  if (form) {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const userName = form.username.value;
-      const email = form.email.value;
-      const bio = form.bio.value;
-      profile.updateProfile(userName, email, bio);
-      router.navigateTo("/");
-    });
-  }
-});
+export const profile = new Profile();
 
 export const ProfilePage = () => {
   return `
@@ -72,7 +57,6 @@ export const ProfilePage = () => {
                     type="text"
                     id="username"
                     name="username"
-                    // value="홍길동"
                     class="w-full p-2 border rounded"
                   />
                 </div>
@@ -86,7 +70,6 @@ export const ProfilePage = () => {
                     type="email"
                     id="email"
                     name="email"
-                    // value="hong@example.com"
                     class="w-full p-2 border rounded"
                   />
                 </div>
@@ -122,4 +105,34 @@ export const ProfilePage = () => {
       </div>
     </div>
   `;
+};
+
+// 이벤트 리스너 등록 함수
+export const attachProfileFormListeners = () => {
+  const form = document.getElementById("profileForm");
+  if (!form) {
+    console.error("Profile form not found!");
+    return;
+  }
+
+  const { userName, email, bio } = profile.getProfile();
+  form.username.value = userName;
+  form.email.value = email;
+  form.bio.value = bio;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const userName = form.username.value.trim();
+    const email = form.email.value.trim();
+    const bio = form.bio.value.trim();
+
+    if (!userName || !email || !bio) {
+      alert("모든 필드를 채워주세요.");
+      return;
+    }
+
+    profile.updateProfile(userName, email, bio);
+    alert("프로필이 성공적으로 업데이트되었습니다.");
+    router.navigateTo("/");
+  });
 };
