@@ -1,3 +1,4 @@
+import { Header, Footer } from "../components";
 import { router } from "../router";
 
 class Profile {
@@ -29,16 +30,13 @@ export const ProfilePage = () => {
     <div id="root">
       <div class="bg-gray-100 min-h-screen flex justify-center">
         <div class="max-w-md w-full">
-          <header class="bg-blue-600 text-white p-4 sticky top-0">
-            <h1 class="text-2xl font-bold">항해플러스</h1>
-          </header>
-
+          ${Header()}
           <nav class="bg-white shadow-md p-2 sticky top-14">
             <ul class="flex justify-around">
-              <li><a href="/" class="text-gray-600">홈</a></li>
-              <li><a href="/profile" class="text-blue-600">프로필</a></li>
-              <li><a href="/login" class="text-gray-600">로그아웃</a></li>
-            </ul>
+            <li><a href="/" class="text-gray-600">홈</a></li>
+            <li><a href="/profile" class="text-gray-600">프로필</a></li>
+            <li><a href="/login" class="text-gray-600" id="logout">로그아웃</a></li>
+          </ul>
           </nav>
 
           <main class="p-4">
@@ -98,9 +96,7 @@ export const ProfilePage = () => {
             </div>
           </main>
 
-          <footer class="bg-gray-200 p-4 text-center">
-            <p>&copy; 2024 항해플러스. All rights reserved.</p>
-          </footer>
+          ${Footer()}
         </div>
       </div>
     </div>
@@ -115,16 +111,26 @@ export const attachProfileFormListeners = () => {
     return;
   }
 
+  // 추가: username, email, bio 필드가 존재하는지 확인
+  const usernameField = form.username;
+  const emailField = form.email;
+  const bioField = form.bio;
+
+  if (!usernameField || !emailField || !bioField) {
+    console.error("One or more input fields are missing!");
+    return;
+  }
+
   const { userName, email, bio } = profile.getProfile();
-  form.username.value = userName;
-  form.email.value = email;
-  form.bio.value = bio;
+  usernameField.value = userName;
+  emailField.value = email;
+  bioField.value = bio;
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const userName = form.username.value.trim();
-    const email = form.email.value.trim();
-    const bio = form.bio.value.trim();
+    const userName = usernameField.value.trim();
+    const email = emailField.value.trim();
+    const bio = bioField.value.trim();
 
     if (!userName || !email || !bio) {
       alert("모든 필드를 채워주세요.");

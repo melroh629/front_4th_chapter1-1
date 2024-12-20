@@ -1,4 +1,5 @@
 import { MainPage, ProfilePage, LoginPage, ErrorPage } from "../pages";
+import { attachProfileFormListeners } from "../pages/ProfilePage";
 
 export class Router {
   constructor() {
@@ -11,10 +12,8 @@ export class Router {
   }
 
   navigateTo(path) {
-    if (this.beforeNavigate(path)) {
-      history.pushState(null, "", path);
-      this.handleRoute(path);
-    }
+    history.pushState(null, "", path);
+    this.handleRoute(path);
   }
 
   handlePopState() {
@@ -28,23 +27,21 @@ export class Router {
     if (handler && appRoot) {
       appRoot.innerHTML = handler();
 
-      // 경로별로 이벤트 등록 처리
+      // 각 페이지 렌더링 후 필요한 작업 수행
       if (path === "/profile") {
-        import("../pages/ProfilePage.js").then((module) => {
-          module.attachProfileFormListeners();
-        });
+        attachProfileFormListeners(); // 프로필 페이지에 이벤트 리스너 추가
       }
-    } else {
-      appRoot.innerHTML = ErrorPage();
+    } else if (appRoot) {
+      appRoot.innerHTML = ErrorPage(); // 404 페이지 처리
     }
   }
-
   beforeNavigate(path) {
     const userId = localStorage.getItem("userId");
+
+    // 비로그인 상태에서 /profile 접근 시 로그인 페이지로 리다이렉트
     if (path === "/profile" && !userId) {
-      alert("로그인이 필요합니다.");
       this.navigateTo("/login");
-      return false;
+      return false; // 현재 경로를 중단
     }
     return true;
   }
