@@ -1,17 +1,12 @@
-import { Header, Footer } from "../components";
+import { Header, Footer } from "../components/index.js";
 
-export const MainPage = () => `
-  <div class="bg-gray-100 min-h-screen flex justify-center">
+export const MainPage = () => {
+  const header = Header();
+  const footer = Footer();
+  const template = `
+    <div class="bg-gray-100 min-h-screen flex justify-center">
     <div class="max-w-md w-full">
-      ${Header()}
-      <nav class="bg-white shadow-md p-2 sticky top-14">
-        <ul class="flex justify-around">
-          <li><a href="/" class="text-gray-600">홈</a></li>
-          <li><a href="/profile" class="text-gray-600">프로필</a></li>
-          <li><a href="/login" class="text-gray-600" id="logout">로그아웃</a></li>
-        </ul>
-      </nav>
-
+    ${header.template}
       <main class="p-4">
         <div class="mb-4 bg-white rounded-lg shadow p-4">
           <textarea class="w-full p-2 border rounded" placeholder="무슨 생각을 하고 계신가요?"></textarea>
@@ -101,8 +96,14 @@ export const MainPage = () => `
           </div>
         </div>
       </main>
-
-      ${Footer()}
+      ${footer.template}
     </div>
-  </div>
-`;
+  </div>  
+  `;
+  const init = () => {
+    console.log("MainPage init");
+    header.init();
+    footer.init();
+  };
+  return { template, init };
+};
