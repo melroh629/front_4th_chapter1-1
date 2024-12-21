@@ -8,7 +8,9 @@ class UserStore {
     const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : null;
   }
-
+  isLogin() {
+    return this.isLoggedIn;
+  }
   saveUserToStorage(user) {
     localStorage.setItem("user", JSON.stringify(user));
     this.user = user;

@@ -1,5 +1,6 @@
 import { Header, Footer } from "../components/index.js";
 import { userStore } from "../store/userStore.js";
+import { router } from "../router/router.js";
 
 export const ProfilePage = () => {
   const header = Header();
@@ -108,6 +109,7 @@ export const ProfilePage = () => {
       // 사용자 정보 업데이트
       userStore.saveUserToStorage(updatedUser);
       alert("프로필이 성공적으로 업데이트되었습니다!");
+      router.navigate("/");
     });
   };
 
